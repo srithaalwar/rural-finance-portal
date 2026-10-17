@@ -10,10 +10,9 @@ function AddAdminModal({ onClose }) {
   const [f, setF] = useState({ name: '', email: '', mobile: '' })
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
 
-  const submit = () => {
-    if (!f.name.trim()) return
-    addUser({ ...f, role: 'Admin', location: HQ })
-    onClose()
+  const submit = async () => {
+    if (!f.name.trim() || !f.email.trim()) return
+    if (await addUser({ ...f, role: 'Admin' })) onClose()
   }
 
   return (

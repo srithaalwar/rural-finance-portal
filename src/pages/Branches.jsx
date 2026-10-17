@@ -13,10 +13,9 @@ function AddBranchModal({ onClose }) {
   const [f, setF] = useState({ name: '', area: '', district: '' })
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
 
-  const submit = () => {
+  const submit = async () => {
     if (!f.name.trim()) return
-    addBranch(f)
-    onClose()
+    if (await addBranch(f)) onClose()
   }
 
   return (
@@ -44,7 +43,7 @@ function AddBranchModal({ onClose }) {
 }
 
 export default function Branches() {
-  const { branches, users } = useApp()
+  const { branches } = useApp()
   const [show, setShow] = useState(false)
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('All statuses')
@@ -61,7 +60,7 @@ export default function Branches() {
     b.area,
     b.district,
     HQ,
-    users.filter((u) => u.location === b.name).length,
+    b.staff,
     b.opened,
     <Badge>{b.status}</Badge>,
   ])

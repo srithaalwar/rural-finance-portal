@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import ProtectedRoute from './ProtectedRoute'
 import AppLayout from '../components/layout/AppLayout'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
@@ -13,13 +14,15 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route element={<AppLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/head-office" element={<HeadOffice />} />
-        <Route path="/branches" element={<Branches />} />
-        <Route path="/admins" element={<Admins />} />
-        <Route path="/staff" element={<Staff />} />
-        <Route path="/roles" element={<RolesPermissions />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/head-office" element={<HeadOffice />} />
+          <Route path="/branches" element={<Branches />} />
+          <Route path="/admins" element={<Admins />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/roles" element={<RolesPermissions />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

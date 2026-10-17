@@ -5,7 +5,7 @@ import { useApp } from '../context/appContext'
 import { ROLES, HQ_ROLES, ROLE_DESC, PERMISSION_GROUPS, ALL_PERMISSIONS } from '../data/mockData'
 
 export default function RolesPermissions() {
-  const { users, rolePerms, togglePermission, showToast } = useApp()
+  const { users, rolePerms, togglePermission, savePermissions } = useApp()
   const [role, setRole] = useState('Admin')
   const locked = role === 'Super Admin'
 
@@ -32,7 +32,7 @@ export default function RolesPermissions() {
         <div>
           <Card
             title={role}
-            action={!locked && <button className="btn p s" onClick={() => showToast('Permissions saved')}>Save</button>}
+            action={!locked && <button className="btn p s" onClick={() => savePermissions(role)}>Save</button>}
           >
             <p className="mu" style={{ margin: 0 }}>
               {ROLE_DESC[role]} · Works at: <b>{HQ_ROLES.includes(role) ? 'Head Office' : 'A branch'}</b> ·{' '}

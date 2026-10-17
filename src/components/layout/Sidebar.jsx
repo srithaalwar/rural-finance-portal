@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { clearSession } from '../../api/client'
 
 const NAV = [
   ['MAIN', [['Dashboard', '/dashboard', '🏠']]],
@@ -18,7 +19,10 @@ export default function Sidebar({ open, onNavigate }) {
             <NavLink
               key={to}
               to={to}
-              onClick={onNavigate}
+              onClick={() => {
+                if (to === '/login') clearSession()
+                onNavigate()
+              }}
               className={({ isActive }) => `nl ${isActive ? 'active' : ''}`}
             >
               <span>{icon}</span>

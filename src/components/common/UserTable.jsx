@@ -13,11 +13,11 @@ export default function UserTable({ users, placeholder }) {
   const filtered = users.filter(
     (u) =>
       (status === 'All statuses' || u.status === status) &&
-      `${u.id} ${u.name} ${u.email} ${u.mobile} ${u.role} ${u.location}`.toLowerCase().includes(q.toLowerCase())
+      `${u.code} ${u.name} ${u.email} ${u.mobile} ${u.role} ${u.location}`.toLowerCase().includes(q.toLowerCase())
   )
 
   const rows = filtered.map((u) => [
-    u.id,
+    u.code,
     <>
       <b>{u.name}</b>
       <div className="sm mu">{u.email}</div>

@@ -9,14 +9,19 @@ const STAFF_ROLES = ROLES.slice(2)
 
 function AddStaffModal({ onClose }) {
   const { addUser, branches } = useApp()
-  const [f, setF] = useState({ name: '', email: '', mobile: '', role: STAFF_ROLES[0], branch: branches[0]?.name || '' })
+  const [f, setF] = useState({
+    name: '', email: '', mobile: '', role: STAFF_ROLES[0], branchId: branches[0]?.id || '',
+  })
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
   const atHq = HQ_ROLES.includes(f.role)
 
-  const submit = () => {
-    if (!f.name.trim()) return
-    addUser({ name: f.name, email: f.email, mobile: f.mobile, role: f.role, location: atHq ? HQ : f.branch })
-    onClose()
+  const submit = async () => {
+    if (!f.name.trim() || !f.email.trim()) return
+    const ok = await addUser({
+      name: f.name, email: f.email, mobile: f.mobile, role: f.role,
+      branchId: atHq ? null : Number(f.branchId),
+    })
+    if (ok) onClose()
   }
 
   return (
@@ -45,8 +50,8 @@ function AddStaffModal({ onClose }) {
           {atHq ? (
             <select disabled><option>{HQ}</option></select>
           ) : (
-            <select value={f.branch} onChange={set('branch')}>
-              {branches.map((b) => <option key={b.code}>{b.name}</option>)}
+            <select value={f.branchId} onChange={set('branchId')}>
+              {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
           )}
         </div>

@@ -1,55 +1,65 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { AppContext } from './appContext'
-import { initialBranches, initialUsers, initialRolePermissions, todayLabel } from '../data/mockData'
+import { api } from '../api/client'
 
 export default function AppProvider({ children }) {
-  const [branches, setBranches] = useState(initialBranches)
-  const [users, setUsers] = useState(initialUsers)
-  const [rolePerms, setRolePerms] = useState(initialRolePermissions)
+  const [branches, setBranches] = useState([])
+  const [users, setUsers] = useState([])
+  const [roles, setRoles] = useState([])
+  const [rolePerms, setRolePerms] = useState({})
+  const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
 
-  const showToast = useCallback((msg) => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 2400)
+  const showToast = useCallback((msg, type = 'ok') => {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 2600)
   }, [])
 
-  const addBranch = ({ name, area, district }) => {
-    setBranches((b) => [
-      ...b,
-      {
-        code: `BR-${String(b.length + 1).padStart(2, '0')}`,
-        name: name.trim(),
-        area: area || '—',
-        district: district || '—',
-        opened: todayLabel(),
-        status: 'Active',
-      },
-    ])
-    showToast('Branch created under Head Office')
+  const loadBranches = useCallback(async () => setBranches(await api('/branches')), [])
+  const loadUsers = useCallback(async () => setUsers(await api('/users')), [])
+  const loadRoles = useCallback(async () => {
+    const data = await api('/roles')
+    setRoles(data.roles)
+    setRolePerms(Object.fromEntries(data.roles.map((r) => [r.name, r.permissions])))
+  }, [])
+
+  useEffect(() => {
+    Promise.all([loadBranches(), loadUsers(), loadRoles()])
+      .catch((e) => showToast(e.message, 'er'))
+      .finally(() => setLoading(false))
+  }, [loadBranches, loadUsers, loadRoles, showToast])
+
+  const addBranch = async (form) => {
+    try {
+      const r = await api('/branches', { method: 'POST', body: form })
+      await loadBranches()
+      showToast(r.message)
+      return true
+    } catch (e) {
+      showToast(e.message, 'er')
+      return false
+    }
   }
 
-  const addUser = ({ name, email, mobile, role, location }) => {
-    setUsers((u) => [
-      ...u,
-      {
-        id: `U-${String(u.length + 1).padStart(3, '0')}`,
-        name: name.trim(),
-        email: email || '—',
-        mobile: mobile || '—',
-        role,
-        location,
-        status: 'Active',
-      },
-    ])
-    showToast(`${role} added to ${location}`)
+  const addUser = async (form) => {
+    try {
+      const r = await api('/users', { method: 'POST', body: form })
+      await Promise.all([loadUsers(), loadBranches()])
+      showToast(`${r.message} · default password Welcome@123`)
+      return true
+    } catch (e) {
+      showToast(e.message, 'er')
+      return false
+    }
   }
 
-  const toggleUser = (id) => {
-    const target = users.find((x) => x.id === id)
-    if (target.role === 'Super Admin') return showToast('Super Admin cannot be deactivated')
-    setUsers((list) =>
-      list.map((x) => (x.id === id ? { ...x, status: x.status === 'Active' ? 'Inactive' : 'Active' } : x))
-    )
+  const toggleUser = async (id) => {
+    try {
+      await api(`/users/${id}/toggle`, { method: 'PATCH' })
+      await loadUsers()
+    } catch (e) {
+      showToast(e.message, 'er')
+    }
   }
 
   const togglePermission = (role, perm) => {
@@ -59,12 +69,25 @@ export default function AppProvider({ children }) {
     })
   }
 
+  const savePermissions = async (roleName) => {
+    const role = roles.find((r) => r.name === roleName)
+    try {
+      const r = await api(`/roles/${role.id}/permissions`, {
+        method: 'PUT',
+        body: { permissions: rolePerms[roleName] },
+      })
+      showToast(r.message)
+    } catch (e) {
+      showToast(e.message, 'er')
+    }
+  }
+
   return (
     <AppContext.Provider
-      value={{ branches, users, rolePerms, addBranch, addUser, toggleUser, togglePermission, showToast }}
+      value={{ branches, users, rolePerms, addBranch, addUser, toggleUser, togglePermission, savePermissions, showToast }}
     >
-      {children}
-      {toast && <div className="al ok toast">✔ {toast}</div>}
+      {loading ? <p style={{ padding: 24 }}>Loading…</p> : children}
+      {toast && <div className={`al ${toast.type} toast`}>{toast.type === 'ok' ? '✔' : '⚠'} {toast.msg}</div>}
     </AppContext.Provider>
   )
 }
