@@ -5,9 +5,8 @@ import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import HeadOffice from '../pages/HeadOffice'
 import Branches from '../pages/Branches'
-import Admins from '../pages/Admins'
-import Staff from '../pages/Staff'
 import RolesPermissions from '../pages/RolesPermissions'
+import Users from '../pages/Users';
 
 export default function AppRoutes() {
   return (
@@ -19,8 +18,7 @@ export default function AppRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/head-office" element={<HeadOffice />} />
           <Route path="/branches" element={<Branches />} />
-          <Route path="/admins" element={<Admins />} />
-          <Route path="/staff" element={<Staff />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/roles" element={<RolesPermissions />} />
         </Route>
       </Route>
