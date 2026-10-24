@@ -67,25 +67,33 @@ export default function AppProvider({ children }) {
     }
   }
 
-  const addUser = async (form) => {
-    try {
-      const r = await api('/users', {
-        method: 'POST',
-        body: form,
-      })
+const addUser = async (form) => {
+  try {
+    const result = await api('/users', {
+      method: 'POST',
+      body: {
+        name: form.name,
+        email: form.email,
+        mobile: form.mobile,
+        password: form.password,
+      },
+    })
 
-      await Promise.all([
-        loadUsers(),
-        loadBranches(),
-      ])
+    console.log('User creation response:', result)
 
-      showToast(`${r.message} · default password Welcome@123`)
-      return true
-    } catch (e) {
-      showToast(e.message, 'er')
-      return false
-    }
+    await Promise.all([
+      loadUsers(),
+      loadBranches(),
+    ])
+
+    showToast(result.message || 'User created successfully')
+    return true
+  } catch (error) {
+    console.error('Failed to create user:', error)
+    showToast(error.message || 'Failed to create user', 'er')
+    return false
   }
+}
 
   const addRole = async (form) => {
     try {

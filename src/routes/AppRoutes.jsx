@@ -7,6 +7,9 @@ import HeadOffice from '../pages/HeadOffice'
 import Branches from '../pages/Branches'
 import RolesPermissions from '../pages/RolesPermissions'
 import Users from '../pages/Users';
+import RoleForm from '../pages/RoleForm';
+import UserForm from '../pages/UserForm';
+import RoleDashboard from '../pages/RoleDashboard';
 
 export default function AppRoutes() {
   return (
@@ -16,10 +19,29 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/role-dashboard" element={<RoleDashboard />} />
           <Route path="/head-office" element={<HeadOffice />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/users" element={<Users />} />
+          <Route
+            path="/users/new"
+            element={<UserForm />}
+          />
+
+          <Route
+            path="/users/edit/:id"
+            element={<UserForm />}
+          />
           <Route path="/roles" element={<RolesPermissions />} />
+           <Route
+            path="/roles/add"
+            element={<RoleForm />}
+          />
+
+          <Route
+            path="/roles/edit/:id"
+            element={<RoleForm />}
+          />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

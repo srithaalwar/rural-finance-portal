@@ -7,7 +7,7 @@ import Badge from './Badge'
 import { useApp } from '../../context/appContext'
 
 export default function UserTable({
-  users,
+  users = [],
   placeholder,
   onEdit,
 }) {
@@ -16,19 +16,22 @@ export default function UserTable({
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('All statuses')
 
-  const filtered = users.filter(
-    (u) =>
-      (status === 'All statuses' || u.status === status) &&
+  const filtered = users.filter((u) => {
+    const matchesStatus =
+      status === 'All statuses' || u.status === status
+
+    const searchText =
       `${u.code || ''} ${u.name || ''} ${u.email || ''} ${
         u.mobile || ''
-      } ${u.role || ''} ${u.location || ''}`
-        .toLowerCase()
-        .includes(q.toLowerCase())
-  )
+      }`.toLowerCase()
+
+    return matchesStatus && searchText.includes(q.toLowerCase())
+  })
 
   const handleDelete = async (user) => {
     const confirmed = window.confirm(
-      `Delete user "${user.name}" (${user.code})? This action cannot be undone.`
+      `Delete user "${user.name}" (${user.code || `U-${user.id}`})? ` +
+      'This action cannot be undone.'
     )
 
     if (!confirmed) return
@@ -41,14 +44,16 @@ export default function UserTable({
 
     return [
       u.code || `U-${u.id}`,
+
       <>
         <b>{u.name}</b>
         <div className="sm mu">{u.email}</div>
       </>,
+
       u.mobile || '—',
-      <Badge>{u.role || 'Unassigned'}</Badge>,
-      u.location || 'Unassigned',
-      <Badge>{u.status}</Badge>,
+
+      <Badge>{u.status || 'Active'}</Badge>,
+
       <div
         style={{
           display: 'flex',
@@ -58,6 +63,7 @@ export default function UserTable({
         }}
       >
         <button
+          type="button"
           className="btn s"
           onClick={() => onEdit?.(u)}
           disabled={isSuperAdmin}
@@ -66,6 +72,7 @@ export default function UserTable({
         </button>
 
         <button
+          type="button"
           className="btn s"
           onClick={() => toggleUser(u.id)}
           disabled={isSuperAdmin}
@@ -74,6 +81,7 @@ export default function UserTable({
         </button>
 
         <button
+          type="button"
           className="btn s"
           onClick={() => handleDelete(u)}
           disabled={isSuperAdmin}
@@ -99,8 +107,6 @@ export default function UserTable({
           'ID',
           'Name',
           'Mobile',
-          'Role',
-          'Location',
           'Status',
           'Actions',
         ]}

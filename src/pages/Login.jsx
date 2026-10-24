@@ -9,21 +9,33 @@ export default function Login() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setBusy(true)
-    clearSession()
-    try {
-      const data = await api('/auth/login', { method: 'POST', body: { email, password } })
-      setSession(data.token, data.user)
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
+ 
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setError('')
+  setBusy(true)
+  clearSession()
+
+  try {
+    const data = await api('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    })
+
+    setSession(data.token, data.user)
+
+    if (data.user.role === 'Super Admin') {
+      navigate('/dashboard', { replace: true })
+    } else {
+      navigate('/role-dashboard', { replace: true })
     }
+  } catch (err) {
+    setError(err.message)
+  } finally {
+    setBusy(false)
   }
+}
+
 
   return (
     <div className="lg">
