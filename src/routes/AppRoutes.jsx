@@ -10,6 +10,8 @@ import Users from '../pages/Users';
 import RoleForm from '../pages/RoleForm';
 import UserForm from '../pages/UserForm';
 import RoleDashboard from '../pages/RoleDashboard';
+import BranchForm from '../pages/BranchForm'
+import BranchUsers from '../pages/BranchUsers'
 
 export default function AppRoutes() {
   return (
@@ -19,7 +21,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/role-dashboard" element={<RoleDashboard />} />
+          <Route path="/role-dashboard" element={<RoleDashboard />} />
           <Route path="/head-office" element={<HeadOffice />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/users" element={<Users />} />
@@ -33,7 +35,7 @@ export default function AppRoutes() {
             element={<UserForm />}
           />
           <Route path="/roles" element={<RolesPermissions />} />
-           <Route
+          <Route
             path="/roles/add"
             element={<RoleForm />}
           />
@@ -42,6 +44,9 @@ export default function AppRoutes() {
             path="/roles/edit/:id"
             element={<RoleForm />}
           />
+
+          <Route path="/branchform" element={<BranchForm />} />
+          <Route path="/manageusers/:id" element={<BranchUsers />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

@@ -76,6 +76,7 @@ const addUser = async (form) => {
         email: form.email,
         mobile: form.mobile,
         password: form.password,
+        confirmPassword: form.confirmPassword,
       },
     })
 
@@ -226,6 +227,23 @@ const unassignUserFromBranch = async (userId, branchId) => {
   }
 }
 
+const saveBranchMembers = async (branchId, members) => {
+  try {
+    const result = await api(`/users/branch/${branchId}/members`, {
+      method: 'PUT',
+      body: { members },
+    })
+
+    // Refresh so branchIds / branchRoleMap reflect the save
+    await Promise.all([loadUsers(), loadBranches()])
+
+    showToast(result.message || 'Branch members saved')
+    return true
+  } catch (e) {
+    showToast(e.message, 'er')
+    return false
+  }
+}
 
   const toggleUser = async (id) => {
     try {
@@ -292,6 +310,7 @@ const unassignUserFromBranch = async (userId, branchId) => {
         savePermissions,
         assignUserToBranch,
          unassignUserFromBranch,
+         saveBranchMembers,   
         showToast,
         updateUser,
         deleteUser,

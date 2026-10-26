@@ -1,10 +1,44 @@
-
 import PageHeader from '../components/common/PageHeader'
 import Card from '../components/common/Card'
 import DataTable from '../components/common/DataTable'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/appContext'
 import { ALL_PERMISSIONS } from '../data/mockData'
+
+/* Inline SVG icons (same as UserTable) */
+const EditIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+    strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+  </svg>
+)
+
+const DeleteIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+    strokeLinejoin="round" aria-hidden="true">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+  </svg>
+)
+
+const iconBtn = (color, disabled) => ({
+  background: 'none',
+  border: '1px solid #d8e3f5',
+  borderRadius: 6,
+  padding: 6,
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  color,
+  opacity: disabled ? 0.4 : 1,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})
 
 export default function RolesPermissions() {
   const navigate = useNavigate()
@@ -55,28 +89,31 @@ export default function RolesPermissions() {
         key={`actions-${role.id}`}
         style={{
           display: 'flex',
-          gap: 6,
+          alignItems: 'center',
+          gap: 8,
           flexWrap: 'wrap',
         }}
       >
         <button
           type="button"
-          className="btn s"
+          title="Edit role"
+          aria-label={`Edit ${role.name}`}
+          style={iconBtn('#1a56db', isSuperAdmin)}
           disabled={isSuperAdmin}
-          onClick={() =>
-            navigate(`/roles/edit/${role.id}`)
-          }
+          onClick={() => navigate(`/roles/edit/${role.id}`)}
         >
-          Edit
+          <EditIcon />
         </button>
 
         <button
           type="button"
-          className="btn s"
+          title="Delete role"
+          aria-label={`Delete ${role.name}`}
+          style={iconBtn('#d93025', isSuperAdmin)}
           disabled={isSuperAdmin}
           onClick={() => handleDeleteRole(role)}
         >
-          Delete
+          <DeleteIcon />
         </button>
       </div>,
     ]
